@@ -1,14 +1,16 @@
-This simplifies the usage and visualisation of LPJ-GUESS ascii output for use in R (al least for me). You can read the LPJ-GUESS *.out files and creates data.frames of them, p.e.
+LPJ-GUESS is a dynamic global vegetation model (DGVM) available on request at: http://www.nateko.lu.se/lpj-guess
+
+This R package simplifies the usage and visualisation of LPJ-GUESS ascii output for use in R (at least for me). You can read the LPJ-GUESS *.out files and creates data.frames of them, p.e.
 
 * timeseries (either ts or zoo)
 * spatial data frames
 
-These data.frames can be visualized with ggplot2 functions. It also includes some templates for ggplot2 themes. For pretty plotting a World border dataset is used (available at http://thematicmapping.org/downloads/world_borders.php) using the following code:
+These data.frames can be visualized with ggplot2 functions. It also includes some templates for ggplot2 themes. For pretty plotting a world border dataset is used (available at http://thematicmapping.org/downloads/world_borders.php) using the following code:
 
 require(ggplot2)
 require(maptools)
-worldmap <- readShapeSpatial("/data/external/global/Political/worldborders/TM_WORLD_BORDERS-0.3.shp")
+worldmap <- readShapeSpatial("TM_WORLD_BORDERS-0.3.shp")
 worldmap <- fortify(worldmap)
-save(worldmap, file="~/lib/R/LPJ/data/worldmap.RData", compress=TRUE)
+save(worldmap, file="worldmap.RData", compress="xz")
 
 Of course you could write everything yourself, but why reinventing the wheel?
