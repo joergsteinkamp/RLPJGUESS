@@ -1,0 +1,13 @@
+Package: RLPJGUESS
+Version: 0.0-1
+Title: Process and display data from the DGVM LPJ-GUESS.
+Date: 2014-05-11
+Author: Joerg Steinkamp
+Maintainer: Joerg Steinkamp <joergsteinkamp@yahoo.de>
+Depends: R (>= 3.0.1), ggplot2, grid
+Suggests: zoo, mgcv
+Description: Process ascii output data produced by the 
+  dynamic global vegetation model (DGVM) LPJ-GUESS for use in R.
+License: GPL (>= 2)
+URL: http://joergsteinkamp.wordpress.com
+NeedsCompilation: no
