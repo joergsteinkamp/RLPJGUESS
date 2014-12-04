@@ -13,4 +13,11 @@ worldmap <- readShapeSpatial("TM_WORLD_BORDERS-0.3.shp")
 worldmap <- fortify(worldmap)
 save(worldmap, file="worldmap.RData", compress="xz")
 
+This collection of functions can also be applied to other datasets of the form c("Lon","Lat","Year", data columns). R can build a package of this directory by executing the following command in the parent directory:
+> R CMD build RLPJGUESS && R CMD INSTALL RLPJGUESS_0.0-1.tar.gz
+
+And it can be check by:
+> R CMD check RLPJGUESS_0.0-1.tar.gz
+This still gives some warnings, with which I can live with.
+
 Of course you could write everything yourself, but why reinventing the wheel?
