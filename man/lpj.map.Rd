@@ -1,12 +1,12 @@
 % File LPJ/man/plot.map.Rd
-\name{plot.map}
-\alias{plot.map}
+\name{lpj.map}
+\alias{lpj.map}
 \title{plot a map using ggplot2}
 \description{
   Create a map of one variable in a dataset.
 }
 \usage{
-plot.map(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1)
+lpj.map(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1)
 }
 \arguments{
   \item{d}{dataset with columns c("Lon", "Lat") and the variable to display.}

@@ -1,12 +1,12 @@
 % File LPJ/man/plot.scatter.Rd
-\name{plot.scatter}
-\alias{plot.scatter}
+\name{lpj.scatter}
+\alias{lpj.scatter}
 \title{Scatter plot using ggplot2.}
 \description{
   Creates a scatter plot of one variable against another in a data frame.
 }
 \usage{
-plot.scatter(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0)
+lpj.scatter(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0)
 }
 \arguments{
   \item{d}{data frame holding the variables}

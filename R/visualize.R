@@ -2,7 +2,7 @@ if (!exists("worldmap")) {
   data(worldmap)
 }
 
-plot.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
+lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
   # check for compatibility
   if (!is.data.frame(d)) 
     stop("No data.frame given!")
@@ -94,7 +94,7 @@ plot.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
 }
 
 
-plot.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0) {
+lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0) {
   # check for compatibility
   if (!is.data.frame(d)) 
     stop("No data.frame given!")
