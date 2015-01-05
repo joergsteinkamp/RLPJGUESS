@@ -1,2 +1,2 @@
 exportPattern("^[^\\.]")
-import(ggplot2, grid)
+import(methods, ggplot2, grid)
