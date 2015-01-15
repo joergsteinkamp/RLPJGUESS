@@ -5,7 +5,7 @@ Date: 2014-05-11
 Author: Joerg Steinkamp
 Maintainer: Joerg Steinkamp <joergsteinkamp@yahoo.de>
 Depends: R (>= 3.0.1), methods, ggplot2, grid
-Suggests: zoo, mgcv
+Suggests: zoo, mgcv, reshape2, plyr
 Description: Process ascii output data produced by the 
   dynamic global vegetation model (DGVM) LPJ-GUESS for use in R.
 License: GPL (>= 2)

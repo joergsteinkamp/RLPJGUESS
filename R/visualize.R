@@ -62,9 +62,9 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
   }
 
   if (sym.col && is.na(variable)) {
-    p <- p + expand_limits(colour = c(-max(abs(d$value)), max(abs(d$value))))
+    p <- p + expand_limits(fill = c(-max(abs(d$value), na.rm=TRUE), max(abs(d$value), na.rm=TRUE)))
   } else if (sym.col) {
-    p <- eval(parse(text=paste('p + expand_limits(fill = c(-max(abs(d$', variable, ')), max(abs(d$',variable,'))))',sep="")))
+    p <- eval(parse(text=paste('p + expand_limits(fill = c(-max(abs(d$', variable, '), na.rm=TRUE), max(abs(d$',variable,'), na.rm=TRUE)))',sep="")))
   }
 
   if (!any(is.na(cols))) {
