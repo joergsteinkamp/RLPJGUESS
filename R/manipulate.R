@@ -10,7 +10,7 @@ lpj.df2array <- function(d, cname) {
 
   for (i in 1:nrow(d)) {
     out[(d$Lon[i] - min(lon))/rlon + 1, (d$Lat[i] - min(lat))/rlat + 1] =
-        eval(parste(test=paste('d$', cname, '[i]')))
+        eval(parse(text=paste('d$', cname, '[i]', sep="")))
   }
   rv <- eval(parse(text=paste("list(Lon=lon, Lat=lat, ", cname, "=out)", sep="")))
   return(rv)
