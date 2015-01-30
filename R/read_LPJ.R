@@ -1,3 +1,18 @@
+lpj.full <- function(infile=NULL, lon.extent=c(-180, 180), lat.extent=c(-90, 90), time.extent=c(0, 99999), use.time=FALSE) {
+  # read the data
+  data <- read.table(infile, header=TRUE)
+
+  # choose the spatial subset
+  data <- subset(data, Lat<=max(lat.extent) & Lat>=min(lat.extent) & Lon>=min(lon.extent) & Lon<=max(lon.extent))
+
+  if (!use.time) {
+    year <- sort(unique(data$Year))
+    time.extent <- c(year[min(time.extent)], year[max(time.extent)])
+  }
+  data <- subset(data, Year >= min(time.extent) & Year <= max(time.extent))
+  return(data)
+}
+
 lpj.timeseries <- function(infile=NULL, lon.extent=c(-180, 180), lat.extent=c(-90, 90), area.weighted=FALSE, year.offset=0) {
   zoo.avail <- TRUE
   if (!require(zoo, quietly=TRUE)) {
