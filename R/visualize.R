@@ -22,7 +22,7 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
   # define plot region
   lon.limit <- c(min(lon) - res/2, max(lon) + res/2)
   lat.limit <- c(min(lat) - res/2, max(lat) + res/2)
-  
+
   # define axis labels
   lon <- seq(lon.limit[1], lon.limit[2], res)
   lat <- seq(lat.limit[1], lat.limit[2], res)
@@ -94,7 +94,7 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
 }
 
 
-lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0) {
+lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col.variable=NA, cols=NA, alpha=0.7, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0) {
   # check for compatibility
   if (!is.data.frame(d)) 
     stop("No data.frame given!")
@@ -105,6 +105,9 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
   if (!is.na(col.variable))
     if (all(colnames(d) != col.variable))
       stop(paste("No column named '", col.variable, "' present!", sep=""))
+  if (!is.na(wrap.variable))
+    if (all(colnames(d) != wrap.variable))
+      stop(paste("No column named '", wrap.variable, "' present!", sep=""))
   if (!all(is.na(lines))) {
     if (is.data.frame(lines)) {
       if (all(colnames(lines) != "method"))
@@ -124,9 +127,17 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
 
   # create a new data.frame 'd'
   if (is.na(col.variable)) {
-    d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ')', sep="")))
+    if (is.na(wrap.variable)) {
+      d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ', stringsAsFactors=FALSE)', sep="")))
+    } else {
+      d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ', ', wrap.variable, '=d$', wrap.variable, ', stringsAsFactors=FALSE)', sep="")))
+    }
   } else {
-    d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ', col=d$', col.variable, ')', sep="")))
+    if (is.na(wrap.variable)) {
+      d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ', col=d$', col.variable, ', stringsAsFactors=FALSE)', sep="")))
+    } else {
+      d <- eval(parse(text=paste('data.frame(x=d$', x.variable, ', y=d$', y.variable, ', col=d$', col.variable, ', ', wrap.variable, '=d$',wrap.variable, ', stringsAsFactors=FALSE)', sep="")))
+    }
   }
 
   lm.d <- lm(d$y ~ d$x)
@@ -150,8 +161,8 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
 
   if (!is.na(title[4]))
     p <- p + theme(legend.title=element_text(size=10, face="bold"))
-  
-  p <- p + geom_point(alpha=alpha, size=1.5, shape=19)
+
+  p <- p + geom_point(alpha=alpha, size=1.5, shape=16)
 
   if (!is.na(col.variable) && all(!is.na(cols))) {
     if (any(colnames(cols)=="value") && any(colnames(cols)=="colour")) {
@@ -160,13 +171,18 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
         if (sym.col)
           p <- p + expand_limits(colour = c(-max(abs(d$col)), max(abs(d$col))))
     } else if (any(colnames(cols)=="name") && any(colnames(cols)=="colour")) {
-      p <- p + scale_fill_manual(values=cols$colour, na.value="grey", guide=guide_legend(ncol=4))
+      #message("JS_DEBUG: error with wrapping occurs here somtimes.")
+      #print(str(d))
+      #print(str(cols))
+      man.cols <- eval(parse(text=paste("c('",paste(cols$name, cols$colour, sep="'='", collapse="','"),"')", sep="")))
+      p <- p + scale_fill_manual(values=man.cols, na.value="grey", guide=guide_legend(ncol=4))
+      p <- p + scale_colour_manual(values=man.cols, na.value="grey", guide=guide_legend(ncol=4))
       p <- p + theme(legend.key.width  = unit(0.03, "npc"))
     } else {
       warning(paste("cols has wrong column names:", paste(colnames(cols))))
     }
   }
-               
+
   if (!all(is.na(lines))) {
     if (any(lines$method=="1:1")) {
       i=which(lines$method=="1:1")
@@ -186,7 +202,6 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
                             ', col="', lines$col[i],
                             '", linetype="', lines$type[i],
                             '", size=', lines$size[i], ")", sep="")))
-
       } else {
         p <- eval(parse(text=paste('p + geom_smooth(method="', lines$method[i],
                             '", se=', lines$se[i],
@@ -196,7 +211,7 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
       }
     }
   }
-  
+
   if (lab.pos == "topleft" || lab.pos == "tl") {
     x.pos  <- extent$x[1]
     y.pos  <- extent$y[2]
@@ -222,55 +237,56 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
     v.just <- -0.5
     v.diff <- -1.6
   }
-  
+
   if (any(colnames(cols)=="name") && wrap) {
     p <- p + theme(legend.position = "none")
   } else {
-  for (i in 1:length(labels)) {
-    if (labels[i]=="eq") {
-      label <- paste("y == ", signif(sum.lm$coefficients[2,1], 3), "* x +", signif(sum.lm$coefficients[1,1], 3))
-      p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
-                          ', y=', y.pos,
-                          ', hjust=', h.just,
-                          ', vjust=', v.just,
-                          ', label="', label,
-                          '", col="black", parse=TRUE)', sep="")))
-      v.just <- v.just + v.diff
-    } else if (labels[i]=="rsq") {
-      v.just <- v.just - v.diff/2.0
-      if (grepl("^b", lab.pos))
-        v.just <- v.just + v.diff/8.0
-      label <- paste("R^2 == ", signif(sum.lm$r.squared, 3))
-      p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
-                          ', y=', y.pos,
-                          ', hjust=', h.just,
-                          ', vjust=', v.just,
-                          ', label="', label,
-                          '", col="black", parse=TRUE)', sep="")))
-      v.just <- v.just + 1.5*v.diff
-      if (grepl("^b", lab.pos))
-        v.just <- v.just - v.diff/8.0
-    } else if (labels[i]=="rmse") {
-      label <- paste("RMSE == ", signif(mean(sqrt((residuals(lm.d))^2), na.rm=TRUE), 3))
-      p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
-                          ', y=', y.pos,
-                          ', hjust=', h.just,
-                          ', vjust=', v.just,
-                          ', label="', label,
-                          '", col="black", parse=TRUE)', sep="")))
-      v.just <- v.just + v.diff
-    } else if (labels[i]=="me") {
-      label <- paste("ME == ", signif(1 - sum((d$y-d$x)^2, na.rm=TRUE) / sum((d$y-mean(d$y))^2, na.rm=TRUE), 3))
-      p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
-                          ', y=', y.pos,
-                          ', hjust=', h.just,
-                          ', vjust=', v.just,
-                          ', label="', label,
-                          '", col="black", parse=TRUE)', sep="")))
-      v.just <- v.just + v.diff
+    for (i in 1:length(labels)) {
+      if (labels[i]=="eq") {
+        label <- paste("y == ", signif(sum.lm$coefficients[2,1], 3), "* x +", signif(sum.lm$coefficients[1,1], 3))
+        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+                            ', y=', y.pos,
+                            ', hjust=', h.just,
+                            ', vjust=', v.just,
+                            ', label="', label,
+                            '", col="black", parse=TRUE)', sep="")))
+        v.just <- v.just + v.diff
+      } else if (labels[i]=="rsq") {
+        v.just <- v.just - v.diff/2.0
+        if (grepl("^b", lab.pos))
+          v.just <- v.just + v.diff/8.0
+        label <- paste("R^2 == ", signif(sum.lm$r.squared, 3))
+        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+                            ', y=', y.pos,
+                            ', hjust=', h.just,
+                            ', vjust=', v.just,
+                            ', label="', label,
+                            '", col="black", parse=TRUE)', sep="")))
+        v.just <- v.just + 1.5*v.diff
+        if (grepl("^b", lab.pos))
+          v.just <- v.just - v.diff/8.0
+      } else if (labels[i]=="rmse") {
+        label <- paste("RMSE == ", signif(mean(sqrt((residuals(lm.d))^2), na.rm=TRUE), 3))
+        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+                            ', y=', y.pos,
+                            ', hjust=', h.just,
+                            ', vjust=', v.just,
+                            ', label="', label,
+                            '", col="black", parse=TRUE)', sep="")))
+        v.just <- v.just + v.diff
+      } else if (labels[i]=="me") {
+        label <- paste("ME == ", signif(1 - sum((d$y-d$x)^2, na.rm=TRUE) / sum((d$y-mean(d$y))^2, na.rm=TRUE), 3))
+        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+                            ', y=', y.pos,
+                            ', hjust=', h.just,
+                            ', vjust=', v.just,
+                            ', label="', label,
+                            '", col="black", parse=TRUE)', sep="")))
+        v.just <- v.just + v.diff
+      }
     }
   }
-}
+
   if (equal.axis)
     p <- p + coord_fixed(xlim=extent$x, ylim=extent$y)
 
@@ -294,7 +310,8 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", alpha=0.7, col.variab
       p <- p + guides(colour = guide_legend(title=NULL, ncol=3, override.aes = list(size=4, alpha = 1)))
     }
     if (!is.na(col.variable) && wrap)
-      p <- p + facet_wrap(~col, ncol=wrap)
+      p <- eval(parse(text=paste("p + facet_wrap(~", wrap.variable, ", ncol=",wrap,")", sep="")))
   }
   return(p)
 }
+

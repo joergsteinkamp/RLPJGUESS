@@ -13,24 +13,26 @@
   return(dom)
 }
 
+### temperate conifer forest not available, is in Hickler et al. (2006)
+
 biome_classification <- function(lai) {
-  biomes.legend <- data.frame(name=c("Arctic/alpine tundra",
-                                  "Desert",
-                                  "Arid shrubland/steppe",
-                                  "Xeric woodland/shrubland",
-                                  "Dry grassland",
-                                  "Tall grassland",
-                                  "Dry Savannah",
-                                  "Moist Savannah",
-                                "Tropical deciduous forest",
-                                  "Tropical rainforest",
-                                  "Tropical seasonal forest",
-                                  "Temperate mixed forest",
-                                  "Temperate broadleaved evergreen forest",
-                                  "Temperate deciduous forest",
-                                  "Temperate/boreal mixed forest",
-                                  "Boreal evergreen forest/woodland",
-                                  "Boreal deciduous forest/woodland"),
+  biomes.legend <- data.frame(name=c("arctic/alpine tundra",
+                                     "desert",
+                                     "arid shrubland/steppe",
+                                     "xeric woodland/shrubland",
+                                     "dry grassland",
+                                     "tall grassland",
+                                     "dry savannah",
+                                     "moist savannah",
+                                     "tropical deciduous forest",
+                                     "tropical rain forest",
+                                     "tropical seasonal forest",
+                                     "temperate mixed forest",
+                                     "temperate broadleaved evergreen forest",
+                                     "temperate deciduous forest",
+                                     "temperate/boreal mixed forest",
+                                     "boreal evergreen forest/woodland",
+                                     "boreal deciduous forest/woodland"),
                               colour=c("#CECBE6", "#FAF7B3", "#F0F7E4", "#EE4D9A",
                                   "#FCE06B", "#FAC60F", "#D5B229", "#CCDB29",
                                   "#CA862A", "#108742", "#4DB848", "#8AB53F",
@@ -76,46 +78,45 @@ biome_classification <- function(lai) {
   # tropical biomes
   biomes$name[is.na(biomes$name) & tree.lai$total > 2.5 &
                  tree.lai$TrBE > 0.6 * tree.lai$total &
-                 tree.lai$dom.pft.name=="TrBE"] = "Tropical rainforest"
+                 tree.lai$dom.pft.name=="TrBE"] = "tropical rain forest"
   biomes$name[is.na(biomes$name) & tree.lai$total > 2.5 &
                  tree.lai$TrBR > 0.6 * tree.lai$total &
-                 tree.lai$dom.pft.name=="TrBR"] = "Tropical deciduous forest"
+                 tree.lai$dom.pft.name=="TrBR"] = "tropical deciduous forest"
   biomes$name[is.na(biomes$name) & tree.lai$total > 2.5 &
                  tree.lai$trop > 0.5 * tree.lai$total &
-                 (tree.lai$dom.pft.name=="TrBE" | tree.lai$dom.pft.name=="TrBR")] = "Tropical seasonal forest"
+                 (tree.lai$dom.pft.name=="TrBE" | tree.lai$dom.pft.name=="TrBR")] = "tropical seasonal forest"
   # boreal biomes
   biomes$name[is.na(biomes$name) & tree.lai$total > 0.5 & 
                  tree.lai$boreal > 0.8 * tree.lai$total &
-                 tree.lai$dom.pft.name=="BNE"] =
-                     "Boreal evergreen forest/woodland"
+                 tree.lai$dom.pft.name=="BNE"] = "boreal evergreen forest/woodland"
   biomes$name[is.na(biomes$name) & tree.lai$total > 0.5 & 
                  tree.lai$boreal > 0.8 * tree.lai$total &
-                 (tree.lai$dom.pft.name=="BNS" | tree.lai$dom.pft.name=="BIBS" | tree.lai$dom.pft.name=="IBS")] = "Boreal deciduous forest/woodland"
+                 (tree.lai$dom.pft.name=="BNS" | tree.lai$dom.pft.name=="BIBS" | tree.lai$dom.pft.name=="IBS")] = "boreal deciduous forest/woodland"
   # temperate
   biomes$name[is.na(biomes$name) & tree.lai$total > 2.5 & 
                  (tree.lai$TeBS > 0.5 * tree.lai$total | tree.lai$TeBE > 0.5 * tree.lai$total) &
-                 tree.lai$dom.pft.name=="TeBE"] = "Temperate broadleaved evergreen forest"
+                 tree.lai$dom.pft.name=="TeBE"] = "temperate broadleaved evergreen forest"
   biomes$name[is.na(biomes$name) & tree.lai$total > 2.5 & 
                  (tree.lai$TeBS > 0.5 * tree.lai$total | tree.lai$TeBE > 0.5 * tree.lai$total) &
-                 tree.lai$dom.pft.name=="TeBS"] = "Temperate deciduous forest"
-  biomes$name[is.na(biomes$name) & tree.lai$total > 2.5]  = "Temperate mixed forest"
+                 tree.lai$dom.pft.name=="TeBS"] = "temperate deciduous forest"
+  biomes$name[is.na(biomes$name) & tree.lai$total > 2.5]  = "temperate mixed forest"
   # NO Temperate mixed forest
   ## biomes$name[is.na(biomes$name) & tree.lai$total > 2.5]  = "Temperate/boreal mixed forest"
   # grass biomes
   biomes$name[is.na(biomes$name) & tree.lai$total >= 0.5 & tree.lai$total <= 2.5 &
-                 (grass.lai$C3G + grass.lai$C4G) / lai$Total < 0.2]  = "Xeric woodland/shrubland"
+                 (grass.lai$C3G + grass.lai$C4G) / lai$Total < 0.2]  = "xeric woodland/shrubland"
   biomes$name[is.na(biomes$name) & tree.lai$total >= 0.5 & tree.lai$total <= 2.5 &
-                 lai$Total > 2.5]  = "Moist Savannah"
+                 lai$Total > 2.5]  = "moist savannah"
   biomes$name[is.na(biomes$name) & tree.lai$total >= 0.5 & tree.lai$total <= 2.5 &
-                 lai$Total <= 2.5]  = "Dry Savannah"
+                 lai$Total <= 2.5]  = "dry savannah"
   biomes$name[is.na(biomes$name) & abs(tree.lai$Lat) >= 54 & tree.lai$total < 0.5 &
-                 lai$Total > 0.2]  = "Arctic/alpine tundra"
-  biomes$name[is.na(biomes$name) & grass.lai$C3G + grass.lai$C4G > 2.0]  = "Tall grassland"
+                 lai$Total > 0.2]  = "arctic/alpine tundra"
+  biomes$name[is.na(biomes$name) & grass.lai$C3G + grass.lai$C4G > 2.0]  = "tall grassland"
   biomes$name[is.na(biomes$name) & tree.lai$total > 0.2 & 
-                 grass.lai$C3G + grass.lai$C4G < 1.0]  = "Arid shrubland/steppe"
-  biomes$name[is.na(biomes$name) & grass.lai$C3G + grass.lai$C4G > 0.2]  = "Dry grassland"
-  biomes$name[is.na(biomes$name) & lai$Total > 0.2]  = "Arid shrubland/steppe"
-  biomes$name[is.na(biomes$name) & lai$Total <= 0.2]  = "Desert"
+                 grass.lai$C3G + grass.lai$C4G < 1.0]  = "arid shrubland/steppe"
+  biomes$name[is.na(biomes$name) & grass.lai$C3G + grass.lai$C4G > 0.2]  = "dry grassland"
+  biomes$name[is.na(biomes$name) & lai$Total > 0.2]  = "arid shrubland/steppe"
+  biomes$name[is.na(biomes$name) & lai$Total <= 0.2]  = "desert"
 
   avail.biomes <- data.frame(name=levels(as.factor(biomes$name)))
 

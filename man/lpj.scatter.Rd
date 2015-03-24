@@ -3,17 +3,22 @@
 \alias{lpj.scatter}
 \title{Scatter plot using ggplot2.}
 \description{
-  Creates a scatter plot of one variable against another in a data frame.
+  Creates a scatter plot of one variable against another in a data
+  frame.
 }
 \usage{
-lpj.scatter(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=NA, lines=NA, labels="", lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE, wrap=0)
+lpj.scatter(d, x.variable="x", y.variable="y", wrap.variable=NA,
+col.variable=NA, cols=NA, alpha=0.7, lines=NA, labels="",
+lab.pos="bottomright", title=NA, sym.col=FALSE, equal.axis=FALSE,
+wrap=0)
 }
 \arguments{
   \item{d}{data frame holding the variables}
   \item{x.variable}{variable name in d for the x-axis.}
   \item{y.variable}{variable name in d for the y-axis.}
-  \item{alpha}{alpha value for the points}
+  \item{wrap.variable}{variable name in d used for wrapping.}
   \item{col.variable}{variable name in d to colour the points according to.}
+  \item{alpha}{alpha value for the points}
   \item{cols}{data frame of c("colour", "values") to be used for the colourbar.}
   \item{lines}{Either a vector of which lines to add to the plot (e.g. "1:1",%
     "lm", "gam", "loess", ...) or a data frame with the previous values%
@@ -27,8 +32,8 @@ lpj.scatter(d, x.variable="x", y.variable="y", alpha=0.7, col.variable=NA, cols=
   \item{title}{vector of plot title, x-axis label and y-axis label.}
   \item{sym.col}{boolean, if the colours should be symmentric arround zero.}
   \item{equal.axis}{boolean, if the axis should be equal.}
-  \item{wrap}{Use facet_wrap for col.variable with <wrap>%
-    columns. Applies only for discrete col.variable type.}
+  \item{wrap}{Use facet_wrap for wrap.variable with <wrap>%
+    columns. Applies only for discrete wrap.variable type.}
 }
 \value{
   ggplot2 list object, which can be plotted with print(p)
