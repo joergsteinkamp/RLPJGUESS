@@ -22,7 +22,7 @@
 .EarthRadius.polar   <- 6356752.3142
 .EarthRadius.equator <- 6378137.0
 
-gridarea1d <- function (lat, dlon, ellipse=FALSE) {
+gridarea1d <- function (lat, dlon, scale=1.0, ellipse=FALSE) {
   nlat <- length(lat)
   area <- array(0.0, nlat)
 
@@ -41,7 +41,7 @@ gridarea1d <- function (lat, dlon, ellipse=FALSE) {
     y <- 2 * pi * .EarthRadius * (abs(lat.border[i+1] - lat.border[i]) / 360.);
     area[i] <- x*y
   }
-  area
+  return(area*scale)
 }
 
 # dlon=0.5
@@ -49,12 +49,12 @@ gridarea1d <- function (lat, dlon, ellipse=FALSE) {
 # lat=seq(89.75,-89.75,-0.5) # equivalent to the above
 # sum(gridarea1d(lat,dlon))/1.e12*720
 
-gridarea2d <- function(lon, lat, ellipse=FALSE) {
+gridarea2d <- function(lon, lat, scale=1.0, ellipse=FALSE) {
   nlon   <- length(lon)
   nlat   <- length(lat)
   lon2d  <- array(rep(lon, times=nlat), c(nlon, nlat))
   lat2d  <- array(rep(lat, each=nlon), c(nlon, nlat))
-  area1d <- gridarea1d(lat, min(lon[2:length(lon)] - lon[1:(length(lon)-1)]), ellipse=ellipse)
+  area1d <- gridarea1d(lat, min(lon[2:length(lon)] - lon[1:(length(lon)-1)]), scale=scale, ellipse=ellipse)
   area2d <- array(rep(area1d, each=length(lon)), c(length(lon), length(lat)))
   area   <- data.frame(Lon=as.vector(lon2d),
                        Lat=as.vector(lat2d),

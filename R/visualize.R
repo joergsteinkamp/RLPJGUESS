@@ -1,8 +1,4 @@
-if (!exists("worldmap")) {
-  data(worldmap)
-}
-
-lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
+lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap.variable=NA, wrap=3) {
   # check for compatibility
   if (!is.data.frame(d)) 
     stop("No data.frame given!")
@@ -12,6 +8,10 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
     stop("No column named 'Lat' present!")
   if (is.na(variable) && all(colnames(d) != "value"))
     stop("No column name given and no column named 'value' present!")
+
+  if (!exists("worldmap")) {
+    data(worldmap)
+  }
 
   # calculate the map resolution
   lon <- sort(unique(d$Lon))
@@ -27,6 +27,9 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
   lon <- seq(lon.limit[1], lon.limit[2], res)
   lat <- seq(lat.limit[1], lat.limit[2], res)
 
+  # exclude outer most longitude labels
+  lon <- lon[2:(length(lon)-1)]
+  
   if (lon.limit[2] - lon.limit[1] >= 360) {
     lon <- sort(unique(floor(abs(lon/60)) * sign(lon) * 60))
   } else if (lon.limit[2] - lon.limit[1] >= 180) {
@@ -75,7 +78,9 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
       p <- p + scale_fill_manual(values=cols$colour, na.value="grey",guide=guide_legend(ncol=4))
       p <- p + theme(legend.key.width  = unit(0.03, "npc"))
     } else {
-      warning(paste("cols has wrong column names:", paste(colnames(cols))))
+      p <- p + scale_fill_gradientn(colours=cols, expand=c(0,0))
+      p <- p + guides(fill=guide_colorbar(nbin = 101, expand=c(0,0)))
+      #warning(paste("cols has wrong column names:", paste(colnames(cols))))
     }
   }
   p <- p + geom_path(data=worldmap, size=0.1, colour = "black", aes(x=long, y=lat, group=group))
@@ -87,8 +92,10 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1) {
 
   if (!is.na(title))
     p <- p + labs(title=title)
-  if (is.na(variable))
-    p <- p + facet_wrap(~variable, ncol=wrap)
+  if (!is.na(wrap.variable))
+    p <- eval(parse(text=paste("p + facet_wrap(~", wrap.variable, ", ncol=",wrap,")", sep="")))
+#  if (is.na(variable))
+#    p <- p + facet_wrap(~variable, ncol=wrap)
 
   return(p)
 }
@@ -162,8 +169,10 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
   if (!is.na(title[4]))
     p <- p + theme(legend.title=element_text(size=10, face="bold"))
 
+#  message("JS_BUG: color set to grey for EGU 2015")
+#  p <- p + geom_point(alpha=alpha, size=1.5, shape=16, col="grey")
   p <- p + geom_point(alpha=alpha, size=1.5, shape=16)
-
+  
   if (!is.na(col.variable) && all(!is.na(cols))) {
     if (any(colnames(cols)=="value") && any(colnames(cols)=="colour")) {
       p <- p + scale_colour_gradientn(colours=cols$colour, values=cols$value)
