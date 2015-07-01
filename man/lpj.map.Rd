@@ -6,7 +6,7 @@
   Create a map of one variable in a dataset.
 }
 \usage{
-lpj.map(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1)
+lpj.map(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap.variable=NA, wrap=1)
 }
 \arguments{
   \item{d}{dataset with columns c("Lon", "Lat") and the variable to display.}
@@ -17,8 +17,9 @@ lpj.map(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap=1)
   \item{title}{title for the plot.}
   \item{sym.col}{boolean, if the colours should be distributed%
     symmentric around zero.}
-  \item{wrap}{If a melted data.frame with columns c("variable", "value")
-  is supplied and <variable> is NA, create <wrap> columns with facet_wrap.}
+  \item{wrap.variable}{column name used for facet_wrap}
+  \item{wrap}{Number of columns for facet_wrap. Only used when
+    wrap.variable is set.}
 }
 \value{
   ggplot2 list object, which can be plotted with print(p)

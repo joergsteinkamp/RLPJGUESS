@@ -1,6 +1,4 @@
 lpj.eval_scatter <- function(d, x.variable="x", y.variable="y", col.variable=NA, wrap.variable=NA, wrap.cols=3, alpha=0.2, line="1:1", title=NA, err.bar=TRUE) {
-  require("RColorBrewer")
-  require("plyr")
 
   if (!is.na(col.variable)) {
     col.levels <- eval(parse(text=paste("unique(d$", col.variable, ")", sep="")))
@@ -10,7 +8,7 @@ lpj.eval_scatter <- function(d, x.variable="x", y.variable="y", col.variable=NA,
   }
 
   p <- lpj.scatter(d, x.variable=x.variable, y.variable=y.variable, col.variable=col.variable, wrap.variable=wrap.variable,
-                   equal.axis=TRUE, alpha=alpha, line=line, cols=sens.legend, title=title)
+                   equal.axis=TRUE, alpha=alpha, lines=line, cols=sens.legend, title=title)
 
   if (err.bar) {
 
@@ -73,7 +71,6 @@ lpj.eval_scatter <- function(d, x.variable="x", y.variable="y", col.variable=NA,
 
 
 lpj.eval_group_sum <- function(d, sum.variable="area", wgt.variable=NA, name="name", sens="sens", scale=1, col=TRUE, shape=NA, jitter=0.1, title=c(NA, "area", "name")) {
-  require(plyr)
   if (!is.na(shape))
     if (typeof(shape) == "logical") {
       if (!shape) shape=NA
@@ -83,8 +80,6 @@ lpj.eval_group_sum <- function(d, sum.variable="area", wgt.variable=NA, name="na
 
   if (is.na(sens) && as.character(col)=="TRUE") col=NA
   
-  require("RColorBrewer")
-
   if (is.na(sens)) {
     if (is.na(wgt.variable)) {
       eval.str <- paste("ddply(d,.(", name, "),summarize,sum=", scale, "*sum(", sum.variable, "))")
@@ -132,16 +127,16 @@ lpj.eval_group_sum <- function(d, sum.variable="area", wgt.variable=NA, name="na
       col = paste('"', col, '"', sep="")
     
     if (is.na(col) && is.na(shape)) {
-      p <- p + geom_point(size=3, position = position_jitter(w = 0, h = jitter))
+      p <- p + geom_point(size=3, position = position_jitter(width = 0, height = jitter))
     } else if (is.na(shape)) {
-      p <- eval(parse(text=paste('p + geom_point(size=3, col=', col, ', position = position_jitter(w = 0, h = jitter))',sep="")))
+      p <- eval(parse(text=paste('p + geom_point(size=3, col=', col, ', position = position_jitter(width = 0, height = jitter))',sep="")))
     } else if (is.na(col) && !is.na(shape)) {
-      p <- eval(parse(text=paste('p + geom_point(size=3, shape=', shape, ', position = position_jitter(w = 0, h = jitter))', sep="")))
+      p <- eval(parse(text=paste('p + geom_point(size=3, shape=', shape, ', position = position_jitter(width = 0, height = jitter))', sep="")))
     } else {
-      p <- eval(parse(text=paste('p + geom_point(size=3, col=', col, ', shape=', shape, ', position = position_jitter(w = 0, h = jitter))', sep="")))
+      p <- eval(parse(text=paste('p + geom_point(size=3, col=', col, ', shape=', shape, ', position = position_jitter(width = 0, height = jitter))', sep="")))
     }
   } else {
-    p <- p + geom_point(size=3, position = position_jitter(w = 0, h = jitter))
+    p <- p + geom_point(size=3, position = position_jitter(width = 0, height = jitter))
   }
 
   if (!is.na(title[1]))
@@ -239,7 +234,7 @@ lpj.eval_biome.map <- function(d, includeRefMap=TRUE, map.cols=3, legend.cols=3)
   biomes.legend$colour = as.character(biomes.legend$colour)
   biomes.legend <- merge(biomes.legend, avail.biomes, all=TRUE, by="name")
 
-  p <- lpj.map(biome, variable="name", col=biomes.legend)
+  p <- lpj.map(biome, variable="name", cols=biomes.legend)
   p <- p + facet_wrap(~sens, ncol=map.cols)
   p <- p + guides(fill = guide_legend(ncol = legend.cols))
 

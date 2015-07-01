@@ -6,11 +6,12 @@
   Calculates the area in m^2 of a logitude/latitude mesh.
 }
 \usage{
-gridarea2d(lon, lat, ellipse)
+gridarea2d(lon, lat, scale, ellipse)
 }
 \arguments{
   \item{lon}{vector of gridcell longitude midpoints in degree.}
   \item{lat}{vector of gridcell latitude midpoints in degree.}
+  \item{scale}{scaling factor (default: 1.0).}
   \item{ellipse}{boolean, whether to use ellipsoid or sphere (default FALSE).}
 }
 \value{

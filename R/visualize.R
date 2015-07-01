@@ -1,4 +1,4 @@
-lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap.variable=NA, wrap=3) {
+lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap.variable=NA, wrap=1) {
   # check for compatibility
   if (!is.data.frame(d)) 
     stop("No data.frame given!")
