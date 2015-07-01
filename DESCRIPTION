@@ -1,7 +1,7 @@
 Package: RLPJGUESS
-Version: 0.1
+Version: 0.2
 Title: Process and display data from the DGVM LPJ-GUESS.
-Date: 2014-05-11
+Date: 2015-07-01
 Author: Joerg Steinkamp
 Maintainer: Joerg Steinkamp <joergsteinkamp@yahoo.de>
 Depends: R (>= 3.0.1), methods, ggplot2, grid, RColorBrewer, plyr
