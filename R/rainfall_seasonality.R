@@ -13,9 +13,13 @@
 # This calculation is based on
 #
 # Charles G. Markhan (1970) Seasonality of precipitation
-# in rhe United States, Annals of the Association of 
+# in the United States, Annals of the Association of 
 # American Geographers, 60:3, 593-597,
 # DOI: 10.1111/j.1467-8306.1970.tb00743.x
+
+
+## Doesn't run currently. setClass is not allowed simply
+## inside a package function.
 
 rainfall_seasonality <- function(
     len=c(10,  8,  6,  5,  4,  3,  1,  1,  2,  5,  7,  9),
@@ -55,7 +59,7 @@ rainfall_seasonality <- function(
                  vx=array(NA, len.dim), y=array(NA, len.dim),
                  seasonality=array(NA, len.dim[1:(length(len.dim)-1)])))
   }
-  res <- new("rf_seasonality")
+#  res <- new("rf_seasonality")
 
   # calculate the wheighted angles based on wgt
   cwgt <- cumsum(wgt) - wgt/2
