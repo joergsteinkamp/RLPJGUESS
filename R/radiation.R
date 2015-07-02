@@ -23,10 +23,10 @@ lpj.daylength <- function(lat, doy, leap=FALSE) {
 ## cloud coverage or sun shine fraction, latitude and
 ## day of the year as done in function daylengthinsoleet
 ## (driver.cpp) LPJ-GUESS v2.1
-lpj.radiation <- function(lat, doy, frac, albedo=0.17, sun=FALSE, leap=FALSE) {
+lpj.radiation <- function(lat, doy, frac, albedo=0.17, percent=FALSE, sun=FALSE, leap=FALSE) {
   dom <- c(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   if (leap) dom[3] = 29
-  if (max(frac) <= 1)
+  if (!precent)
     frac <- frac*100
   
   if (sun) {

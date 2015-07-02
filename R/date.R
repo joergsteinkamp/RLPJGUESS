@@ -7,7 +7,7 @@ is.leapyear <- function(year) {
 }
 
 ## day of year to date in the form of MonthDay conversion
-doy2mmdd <- function (doy, leap=FALSE) {
+doy2mmdd <- function(doy, leap=FALSE) {
   dom <- c(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   if (leap) dom[3] = 29
   day <- 0
@@ -22,7 +22,9 @@ doy2mmdd <- function (doy, leap=FALSE) {
 }
 
 ## date in the form of MonthDay to day of year conversion
-mmdd2doy <- function (mmdd, leap=FALSE) {
+mmdd2doy <- function(mmdd, leap=FALSE) {
+  mmdd <- as.numeric(mmdd)
+  stopifnot(mmdd>100 && mmdd<1232)
   dom <- c(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   if (leap) dom[3] = 29
   return(sum(dom[1:floor(mmdd / 100)]) + mmdd - (floor(mmdd / 100)) * 100)

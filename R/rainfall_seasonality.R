@@ -53,7 +53,7 @@ rainfall_seasonality <- function(
                             seasonality="array"),
              prototype=list(angle=numeric(),
                  vx=array(NA, len.dim), y=array(NA, len.dim),
-                 seasonality=array(NA, len.dim)))
+                 seasonality=array(NA, len.dim[1:(length(len.dim)-1)])))
   }
   res <- new("rf_seasonality")
 
@@ -90,7 +90,8 @@ rainfall_seasonality <- function(
     for (i in 1:(length(len.dim)-1)) {
       dim.str <- paste(dim.str, ",")
     }
-    res@seasonality = eval(parse(text=paste("(sqrt(cs.vx[", dim.str, "]^2 + cs.vy[", dim.str, "]^2)) / s.len")))
+    res@seasonality = as.array(eval(parse(text=paste("(sqrt(cs.vx[", dim.str, "]^2 + cs.vy[", dim.str, "]^2)) / s.len"))))
+
   }
   if (debug) {
     return(res)
