@@ -1,2 +1,4 @@
 exportPattern("^[^\\.]")
 import(methods, ggplot2, grid, plyr, RColorBrewer)
+exportClasses(rf_seasonality_v)
+exportClasses(rf_seasonality_a)

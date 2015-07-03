@@ -17,9 +17,20 @@
 # American Geographers, 60:3, 593-597,
 # DOI: 10.1111/j.1467-8306.1970.tb00743.x
 
-
-## Doesn't run currently. setClass is not allowed simply
-## inside a package function.
+setClass("rf_seasonality_v",
+         representation(angle="numeric",
+                        vx="numeric", vy="numeric",
+                        seasonality="numeric"),
+         prototype=list(angle=numeric(),
+             vx=numeric(), vy=numeric(),
+             seasonality=numeric()))
+setClass("rf_seasonality_a",
+         representation(angle="numeric",
+                        vx="array", vy="array",
+                        seasonality="array"),
+         prototype=list(angle=numeric(),
+             vx=array(), vy=array(),
+             seasonality=array()))
 
 rainfall_seasonality <- function(
     len=c(10,  8,  6,  5,  4,  3,  1,  1,  2,  5,  7,  9),
@@ -43,23 +54,13 @@ rainfall_seasonality <- function(
   }
 
   if (is.vector(len)) {
-    setClass("rf_seasonality",
-             representation(angle="numeric",
-                            vx="numeric", vy="numeric",
-                            seasonality="numeric"),
-             prototype=list(angle=numeric(),
-                 vx=numeric(), y=numeric(),
-                 seasonality=numeric()))
+    res <- new("rf_seasonality_v")
   } else {
-    setClass("rf_seasonality",
-             representation(angle="numeric",
-                            vx="array", vy="array",
-                            seasonality="array"),
-             prototype=list(angle=numeric(),
-                 vx=array(NA, len.dim), y=array(NA, len.dim),
-                 seasonality=array(NA, len.dim[1:(length(len.dim)-1)])))
+    res <- new("rf_seasonality_a")
+    res@vx = array(NA, len.dim)
+    res@vy = array(NA, len.dim)
+    res@seasonality=array(NA, len.dim[1:(length(len.dim)-1)])
   }
-#  res <- new("rf_seasonality")
 
   # calculate the wheighted angles based on wgt
   cwgt <- cumsum(wgt) - wgt/2
