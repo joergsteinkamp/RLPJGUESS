@@ -171,8 +171,11 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
 
 #  message("JS_BUG: color set to grey for EGU 2015")
 #  p <- p + geom_point(alpha=alpha, size=1.5, shape=16, col="grey")
-  p <- p + geom_point(alpha=alpha, size=1.5, shape=16)
-  
+  if (is.atomic(cols)) {
+    p <- p + geom_point(alpha=alpha, size=1.5, shape=16, col=cols)
+  } else {
+    p <- p + geom_point(alpha=alpha, size=1.5, shape=16)
+  }
   if (!is.na(col.variable) && all(!is.na(cols))) {
     if (any(colnames(cols)=="value") && any(colnames(cols)=="colour")) {
       p <- p + scale_colour_gradientn(colours=cols$colour, values=cols$value)
@@ -224,27 +227,27 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
   if (lab.pos == "topleft" || lab.pos == "tl") {
     x.pos  <- extent$x[1]
     y.pos  <- extent$y[2]
-    h.just <- -0.05
-    v.just <- 1.5
+    h.just <- -0.1
+    v.just <- 1.75
     v.diff <- 1.5
   } else if (lab.pos == "topright" || lab.pos == "tr") {
     x.pos  <- extent$x[2]
     y.pos  <- extent$y[2]
-    h.just <- 1.05
-    v.just <- 1.5
+    h.just <- 1.1
+    v.just <- 1.75
     v.diff <- 1.5
   } else if (lab.pos == "bottomright" || lab.pos == "br") {
     x.pos  <- extent$x[2]
     y.pos  <- extent$y[1]
-    h.just <- 1.05
-    v.just <- -0.5
-    v.diff <- -1.6
+    h.just <- 1.1
+    v.just <- -0.1
+    v.diff <- -1.7
   } else if (lab.pos == "bottomleft" || lab.pos == "bl") {
     x.pos  <- extent$x[1]
     y.pos  <- extent$y[1]
-    h.just <- -0.05
-    v.just <- -0.5
-    v.diff <- -1.6
+    h.just <- -0.1
+    v.just <- -0.1
+    v.diff <- -1.7
   }
 
   if (any(colnames(cols)=="name") && wrap) {
@@ -253,7 +256,7 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
     for (i in 1:length(labels)) {
       if (labels[i]=="eq") {
         label <- paste("y == ", signif(sum.lm$coefficients[2,1], 3), "* x +", signif(sum.lm$coefficients[1,1], 3))
-        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+        p <- eval(parse(text=paste('p + annotate("text", x=', x.pos,
                             ', y=', y.pos,
                             ', hjust=', h.just,
                             ', vjust=', v.just,
@@ -265,18 +268,19 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
         if (grepl("^b", lab.pos))
           v.just <- v.just + v.diff/8.0
         label <- paste("R^2 == ", signif(sum.lm$r.squared, 3))
-        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+        p <- eval(parse(text=paste('p + annotate("text", x=', x.pos,
                             ', y=', y.pos,
                             ', hjust=', h.just,
                             ', vjust=', v.just,
                             ', label="', label,
                             '", col="black", parse=TRUE)', sep="")))
+        
         v.just <- v.just + 1.5*v.diff
         if (grepl("^b", lab.pos))
           v.just <- v.just - v.diff/8.0
       } else if (labels[i]=="rmse") {
         label <- paste("RMSE == ", signif(mean(sqrt((residuals(lm.d))^2), na.rm=TRUE), 3))
-        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+        p <- eval(parse(text=paste('p + annotate("text", x=', x.pos,
                             ', y=', y.pos,
                             ', hjust=', h.just,
                             ', vjust=', v.just,
@@ -285,7 +289,7 @@ lpj.scatter <- function(d, x.variable="x", y.variable="y", wrap.variable=NA, col
         v.just <- v.just + v.diff
       } else if (labels[i]=="me") {
         label <- paste("ME == ", signif(1 - sum((d$y-d$x)^2, na.rm=TRUE) / sum((d$y-mean(d$y))^2, na.rm=TRUE), 3))
-        p <- eval(parse(text=paste('p + geom_text(data=NULL, x=', x.pos,
+        p <- eval(parse(text=paste('p + annotate("text", x=', x.pos,
                             ', y=', y.pos,
                             ', hjust=', h.just,
                             ', vjust=', v.just,
