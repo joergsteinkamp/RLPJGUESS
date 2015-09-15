@@ -10,10 +10,6 @@ lpj.full <- function(infile=NULL, lon.extent=c(-180, 360), lat.extent=c(-90, 90)
   } else {
     data <- subset(data, Year-min(Year)>=min(time.extent) & Year-min(Year)<=max(time.extent))
   }
-  ##if (!use.time) {
-  ##  year <- sort(unique(data$Year))
-  ## time.extent <- c(year[min(time.extent)], year[max(time.extent)])
-  ##}
   data <- subset(data, Year >= min(time.extent) & Year <= max(time.extent))
   return(data)
 }
