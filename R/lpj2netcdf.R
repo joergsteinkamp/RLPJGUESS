@@ -40,7 +40,7 @@ lpj2nc.dim.save <- function(ncout, name, data, start.year=1901, time.unit=c(year
   }
 }
 
-lpj2nc.var.save <- function (ncout, name, dims, descr, data, na.value=-1.e32) {
+lpj2nc.var.save <- function (ncout, name, dims, descr, data, na.value=1.e20) {
   var.def.nc(ncout, name, "NC_FLOAT", dims)
   att.put.nc(ncout, name, "long_name", "NC_CHAR", descr[1])
   att.put.nc(ncout, name, "units", "NC_CHAR", descr[2])
@@ -49,7 +49,7 @@ lpj2nc.var.save <- function (ncout, name, dims, descr, data, na.value=-1.e32) {
 }
 
 
-lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), overwrite=TRUE, as.flux=FALSE, scale=1.0) {
+lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), overwrite=TRUE, as.flux=FALSE, scale=1.0, na.value=1.e20) {
   if (!require("RNetCDF", quietly=TRUE)) {
     message("RNetCDF library not installed. Exiting function.")
     return(FALSE)
@@ -98,7 +98,7 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
     if (as.flux)
       data.out <- aperm(aperm(data.out, c(3, 1, 2)) / dpm, c(2, 3, 1))
 
-    lpj2nc.var.save(ncout, descr[1], c("lon", "lat", "time"), descr[2:3], scale * data.out) 
+    lpj2nc.var.save(ncout, descr[1], c("lon", "lat", "time"), descr[2:3], scale * data.out, na.value=na.value) 
 
   } else {
     ## TODO: check if dim is alredy defined if not overwrite
@@ -117,9 +117,9 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
     
     for (i in 4:length(colnames(df))) {
       if (descr[1]!="name") {
-        lpj2nc.var.save(ncout, paste(descr[1], colnames(df)[i], sep="_"), c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,])
+        lpj2nc.var.save(ncout, paste(descr[1], colnames(df)[i], sep="_"), c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,], na.value=na.value)
       } else {
-        lpj2nc.var.save(ncout, colnames(df)[i], c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,])
+        lpj2nc.var.save(ncout, colnames(df)[i], c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,], na.value=na.value)
       }
     }
   }
