@@ -86,7 +86,7 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
     dpm <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
     ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.unit=c(year=FALSE, month=TRUE, day=FALSE))
+    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  start.year=start.year, time.unit=c(year=FALSE, month=TRUE, day=FALSE))
 
     data.out <- array(NA, c(length(lon), length(lat), length(time)*12))
 
@@ -102,7 +102,7 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
 
   } else {
     ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", time-1)
+    lpj2nc.dim.save(ncout, "time", time-1, start.year=start.year)
 
     data.out <- array(NA, c(length(colnames(df))-3, length(lon), length(lat), length(time)))
 
