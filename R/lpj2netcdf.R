@@ -1,4 +1,4 @@
-lpj2nc.dim.save <- function(ncout, name, data, start.year=1901, time.unit=c(year=TRUE, month=FALSE, day=FALSE)) {
+lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 01, 01), time.offset=0, time.unit=c(years=TRUE, months=FALSE, days=FALSE)) {
   if (sum(time.unit) != 1) {
     message(paste("Wrong unit for time dimension:", paste(names(time.unit), time.unit, collapse=", ")))
     return(FALSE)
@@ -8,20 +8,21 @@ lpj2nc.dim.save <- function(ncout, name, data, start.year=1901, time.unit=c(year
     dim.def.nc(ncout, name, unlim=TRUE)
     var.def.nc(ncout, name, "NC_INT", name)
     att.put.nc(ncout, name, "calendar", "NC_CHAR", "365_day")
-    if (time.unit["year"]) {
+    if (time.unit["years"]) {
       att.put.nc(ncout, name, "long_name", "NC_CHAR", "years")
-      att.put.nc(ncout, name, "units", "NC_CHAR", paste("years since ",start.year,"-01-01 00:00:00",sep=""))
-      var.put.nc(ncout, name, data)
-    } else if (time.unit["month"]) {
-      dpm <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+      att.put.nc(ncout, name, "units", "NC_CHAR",
+                 paste("years since ", sprintf("%04i-%02i-%02i", time.start[1], time.start[2], time.start[3]), " 00:00:00",sep=""))
+      var.put.nc(ncout, name, data+time.offset)
+    } else if (time.unit["months"]) {
+      att.put.nc(ncout, name, "long_name", "NC_CHAR", "months")
+      att.put.nc(ncout, name, "units", "NC_CHAR",
+                 paste("months since ", sprintf("%04i-%02i-%02i", time.start[1], time.start[2], time.start[3]), " 00:00:00",sep=""))
+      var.put.nc(ncout, name, data+time.offset)
+    } else if (time.unit["days"]) {
       att.put.nc(ncout, name, "long_name", "NC_CHAR", "days")
-      att.put.nc(ncout, name, "units", "NC_CHAR", paste("days since ",start.year,"-01-01 00:00:00",sep=""))
-      data=cumsum(rep(dpm, length(data)/12)) - rep(dpm, length(data)/12)
-      var.put.nc(ncout, name, data)
-    } else if (time.unit["day"]) {
-      att.put.nc(ncout, name, "long_name", "NC_CHAR", "days")
-      att.put.nc(ncout, name, "units", "NC_CHAR", paste("days since ",start.year,"-01-01 00:00:00",sep=""))
-      var.put.nc(ncout, name, data)
+      att.put.nc(ncout, name, "units", "NC_CHAR",
+                 paste("days since ", sprintf("%04i-%02i-%02i", time.start[1], time.start[2], time.start[3]), " 00:00:00",sep=""))
+      var.put.nc(ncout, name, data+time.offset)
     } else {
       message(paste("Undefined time.unit: ",  paste(names(time.unit), time.unit, collapse=", ")))
       return(FALSE)
@@ -86,7 +87,8 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
     dpm <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
     ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  start.year=start.year, time.unit=c(year=FALSE, month=TRUE, day=FALSE))
+    ##       make time axis definition more flexible
+    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.offset=12*(start.year-1901), time.unit=c(years=FALSE, months=TRUE, days=FALSE))
 
     data.out <- array(NA, c(length(lon), length(lat), length(time)*12))
 
@@ -102,7 +104,7 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
 
   } else {
     ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", time-1, start.year=start.year)
+    lpj2nc.dim.save(ncout, "time", time-1, time.offset=start.year-1901)
 
     data.out <- array(NA, c(length(colnames(df))-3, length(lon), length(lat), length(time)))
 
@@ -123,19 +125,35 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
       }
     }
   }
-  att.put.nc(ncout, "NC_GLOBAL", "Created on", "NC_CHAR", format(Sys.time(), "%d-%m-%Y %H:%M:%S %Z"))
-  att.put.nc(ncout, "NC_GLOBAL", "Created by", "NC_CHAR", Sys.getenv("USER"))
-  if (exists("PLACE")) 
-    att.put.nc(ncout, "NC_GLOBAL", "Created in", "NC_CHAR", PLACE)
-  if (exists("ORGANISATION")) 
-    att.put.nc(ncout, "NC_GLOBAL", "Created at", "NC_CHAR", ORGANISATION)
+  if (exists("TITLE")) 
+    att.put.nc(ncout, "NC_GLOBAL", "title", "NC_CHAR", TITLE)
+  if (exists("CONTACT")) 
+    att.put.nc(ncout, "NC_GLOBAL", "contact", "NC_CHAR", CONTACT)
+  if (exists("ADDRESS")) 
+    att.put.nc(ncout, "NC_GLOBAL", "address", "NC_CHAR", ADDRESS)
+  if (exists("INSTITUTION")) 
+    att.put.nc(ncout, "NC_GLOBAL", "institution", "NC_CHAR", INSTITUTION)
+  if (exists("CLIMATE.FORCING"))
+    att.put.nc(ncout, "NC_GLOBAL", "climate_forcing", "NC_CHAR", CLIMATE.FORCING)
   RNetCDF.info <- library(help = RNetCDF)
   RLPJGUESS.info <- library(help = RLPJGUESS)
-  att.put.nc(ncout, "NC_GLOBAL", "Created with", "NC_CHAR",
-             paste(R.version$version.string,
-                   ", ", sub(".* ", "RLPJGUESS ", RLPJGUESS.info$info[[1]][2]), 
-                   ", ", sub(".* ", "RNetCDF ", RNetCDF.info$info[[1]][2]), 
-                   sep = ""))
+  if (exists("LPJGUESS.VERSION")) {
+    att.put.nc(ncout, "NC_GLOBAL", "software", "NC_CHAR",
+               paste("LPJ-GUESS ", LPJGUESS.Version,
+                     ", ", R.version$version.string,
+                     ", ", sub(".* ", "RLPJGUESS ", RLPJGUESS.info$info[[1]][2]), 
+                     ", ", sub(".* ", "RNetCDF ", RNetCDF.info$info[[1]][2]), 
+                     sep = ""))
+  } else {
+    att.put.nc(ncout, "NC_GLOBAL", "software", "NC_CHAR",
+               paste(R.version$version.string,
+                     ", ", sub(".* ", "RLPJGUESS ", RLPJGUESS.info$info[[1]][2]), 
+                     ", ", sub(".* ", "RNetCDF ", RNetCDF.info$info[[1]][2]), 
+                     sep = ""))
+  }
+  att.put.nc(ncout, "NC_GLOBAL", "platform", "NC_CHAR", Sys.getenv("R_PLATFORM"))
+  #att.put.nc(ncout, "NC_GLOBAL", "user", "NC_CHAR", Sys.getenv("USER"))
+  att.put.nc(ncout, "NC_GLOBAL", "date", "NC_CHAR", format(Sys.time(), "%d-%m-%Y %H:%M:%S %Z"))
   sync.nc(ncout)
   close.nc(ncout)
   return(TRUE)
