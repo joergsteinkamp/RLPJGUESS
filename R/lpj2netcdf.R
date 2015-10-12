@@ -49,7 +49,6 @@ lpj2nc.var.save <- function (ncout, name, dims, descr, data, na.value=1.e20) {
   var.put.nc(ncout, name, data)
 }
 
-
 lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), overwrite=TRUE, as.flux=FALSE, scale=1.0, na.value=1.e20) {
   if (!require("RNetCDF", quietly=TRUE)) {
     message("RNetCDF library not installed. Exiting function.")
