@@ -14,7 +14,7 @@ lpj2nc(df, file, attr, overwrite, as.flux, scale)
   \item{df}{the data.frame object to save}
   \item{file}{file name, default "test.nc"}
   \item{attr}{an attribute list
-    (e.g. "list(name='prec', long_name='precipitation', standard_name='precipitation_amount', units='mm day^-1'"}
+    (e.g. "list(name='prec', long_name='precipitation', standard_name='precipitation_amount', units='mm day^-1')")}
   \item{overwrite}{if an existing file should be overwritten or
     appended}
   \item{as.flux}{if set to true, data is divided by the number of days

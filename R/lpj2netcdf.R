@@ -41,7 +41,7 @@ lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 1, 1), time.of
   }
 }
 
-lpj2nc.var.save <- function (ncout, data, dims, attr) {
+lpj2nc.var.save <- function(ncout, data, dims, attr) {
   name <- attr[["name"]]
   attr[names(attr)!= "name"]
   var.def.nc(ncout, name, "NC_FLOAT", dims)
@@ -51,7 +51,7 @@ lpj2nc.var.save <- function (ncout, data, dims, attr) {
   var.put.nc(ncout, name, data)
 }
 
-lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0) {
+lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0) {
   if (!require("RNetCDF", quietly=TRUE)) {
     message("RNetCDF library not installed. Exiting function.")
     return(FALSE)
@@ -78,28 +78,47 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
     message('Error: First 3 columns must be named "Lon", "Lat", "Year".')
     return(FALSE)
   }
-  
+
+  ## Hard coded lat/lon distance!
   lon        <- seq(min(df$Lon), max(df$Lon), 0.5)
   lat        <- seq(max(df$Lat), min(df$Lat), -0.5)
   time       <- 1:length(unique(df$Year))
   start.year <- min(df$Year)
+
+  if (is.na(time.start))
+    time.start <- c(start_year, 1, 1)
   
   monthly <- FALSE
   if (any(colnames(df)=="Jan"))
     monthly <- TRUE
 
-  ncout <- create.nc(file, clobber=overwrite, large=TRUE)
+  if (overwrite) {
+    ncout <- create.nc(file, large=TRUE)
+  } else {
+    if (!(file.access(file, mode=2)+1)) {
+      message(paste("Cannot open '", file, "' for appending data", sep=""))
+      return(FALSE)
+    }
+    ncout <- open.nc(file, write=TRUE)
+  }
 
-  ## TODO: check if dim is alredy defined if not overwrite
-  lpj2nc.dim.save(ncout, "lon", lon)
-  lpj2nc.dim.save(ncout, "lat", lat)
-
+  ## assume correct lat/lon definitions in append mode (!overwrite)
+  if (overwrite) {
+    lpj2nc.dim.save(ncout, "lon", lon)
+    lpj2nc.dim.save(ncout, "lat", lat)
+  }
+  
   if (monthly) {
     dpm <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
-    ## TODO: check if dim is alredy defined if not overwrite
-    ##       make time axis definition more flexible
-    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.start=c(start_year, 1, 1), time.unit=c(years=FALSE, months=TRUE, days=FALSE))
+    ## TODO: 1.) check if dim is alredy defined if not overwrite
+    ##           make time axis definition more flexible.
+    ##       2.) check if it needs extention, or if a new variable
+    ##           is added.
+    ##       so far only new variables with equal dimension definitions
+    ##       are acepted.
+    if (overwrite)
+      lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.start=time.start, time.offset=time.offset, time.unit=c(years=FALSE, months=TRUE, days=FALSE))
 
     data.out <- array(NA, c(length(lon), length(lat), length(time)*12))
 
@@ -114,8 +133,9 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
     lpj2nc.var.save(ncout, scale * data.out, c("lon", "lat", "time"), attr) 
 
   } else {
-    ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", time-1, time.start=c(start_year, 1, 1))
+    ## TODO: see above
+    if (overwrite) 
+      lpj2nc.dim.save(ncout, "time", time-1, time.start=time.start, time.offset=time.offset, time.unit=c(years=TRUE, months=FALSE, days=FALSE))
 
     data.out <- array(NA, c(length(colnames(df))-3, length(lon), length(lat), length(time)))
 
