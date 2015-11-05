@@ -1,4 +1,4 @@
-lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 01, 01), time.offset=0, time.unit=c(years=TRUE, months=FALSE, days=FALSE)) {
+lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 1, 1), time.offset=0, time.unit=c(years=TRUE, months=FALSE, days=FALSE)) {
   if (sum(time.unit) != 1) {
     message(paste("Wrong unit for time dimension:", paste(names(time.unit), time.unit, collapse=", ")))
     return(FALSE)
@@ -41,25 +41,37 @@ lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 01, 01), time.
   }
 }
 
-lpj2nc.var.save <- function (ncout, name, dims, descr, data, na.value=1.e20) {
+lpj2nc.var.save <- function (ncout, data, dims, attr) {
+  name <- attr[["name"]]
+  attr[names(attr)!= "name"]
   var.def.nc(ncout, name, "NC_FLOAT", dims)
-  att.put.nc(ncout, name, "long_name", "NC_CHAR", descr[1])
-  att.put.nc(ncout, name, "units", "NC_CHAR", descr[2])
-  att.put.nc(ncout, name, "_FillValue", "NC_FLOAT", na.value)
+  for (n in names(attr)) {
+    att.put.nc(ncout, name, n, "NC_FLOAT", attr[[n]])
+  }
   var.put.nc(ncout, name, data)
 }
 
-lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), overwrite=TRUE, as.flux=FALSE, scale=1.0, na.value=1.e20) {
+lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0) {
   if (!require("RNetCDF", quietly=TRUE)) {
     message("RNetCDF library not installed. Exiting function.")
     return(FALSE)
   }
 
-  ## make sure the netcdf variable name is not empty
-  if (is.na(descr[1])) {
-    descr[1]="name"
-  } else if (descr[1] == "") {
-    descr[1]="name"
+  ## make sure attr is a list and the netcdf variable name is not empty
+  if (!is.list(attr)) {
+    message(paste('"attr" is not a list ("', typeof(attr),'" instead)',sep=""))
+    return(FALSE)
+  }
+  if (is.null(attr[['name']])) {
+    attr[['name']]="values"
+  } else {
+    if (is.na(attr[['name']])) {
+      attr[['name']]="values"
+    } else if (!is.character(attr[['name']])) {
+      attr[['name']]="values"
+    } else if (attr[['name']] == "") {
+      attr[['name']]="values"
+    }
   }
   
   if (colnames(df)[1] != "Lon" && colnames(df)[1] != "Lat" && colnames(df)[1] != "Year") {
@@ -87,7 +99,7 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
 
     ## TODO: check if dim is alredy defined if not overwrite
     ##       make time axis definition more flexible
-    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.offset=12*(start.year-1901), time.unit=c(years=FALSE, months=TRUE, days=FALSE))
+    lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.start=c(start_year, 1, 1), time.unit=c(years=FALSE, months=TRUE, days=FALSE))
 
     data.out <- array(NA, c(length(lon), length(lat), length(time)*12))
 
@@ -99,11 +111,11 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
     if (as.flux)
       data.out <- aperm(aperm(data.out, c(3, 1, 2)) / dpm, c(2, 3, 1))
 
-    lpj2nc.var.save(ncout, descr[1], c("lon", "lat", "time"), descr[2:3], scale * data.out, na.value=na.value) 
+    lpj2nc.var.save(ncout, scale * data.out, c("lon", "lat", "time"), attr) 
 
   } else {
     ## TODO: check if dim is alredy defined if not overwrite
-    lpj2nc.dim.save(ncout, "time", time-1, time.offset=start.year-1901)
+    lpj2nc.dim.save(ncout, "time", time-1, time.start=c(start_year, 1, 1))
 
     data.out <- array(NA, c(length(colnames(df))-3, length(lon), length(lat), length(time)))
 
@@ -115,12 +127,15 @@ lpj2nc <- function(df, file="test.nc", descr=c("name", "long_name", "unit"), ove
 
     if (as.flux)
       data.out <- data.out / 365
-    
+
+    basename <- attr[['name']]
     for (i in 4:length(colnames(df))) {
-      if (descr[1]!="name") {
-        lpj2nc.var.save(ncout, paste(descr[1], colnames(df)[i], sep="_"), c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,], na.value=na.value)
+      if (basename!="values") {
+        attr[["name"]] = paste(basename, colnames(df)[i], sep="_")
+        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr)
       } else {
-        lpj2nc.var.save(ncout, colnames(df)[i], c("lon", "lat", "time"), descr[2:3], scale * data.out[i-3,,,], na.value=na.value)
+        attr[["name"]] = colnames(df)[i]
+        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr)
       }
     }
   }
