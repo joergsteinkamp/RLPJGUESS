@@ -9,14 +9,17 @@ lpj.df2array <- function(d, cname) {
   lat <- extract.seq(d$Lat)
   rlon <- lon[2] - lon[1]
   rlat <- lat[2] - lat[1]
+  time <- FALSE
 
-  out <- array(NA, c(length(lon), length(lat)))
-
-  for (i in 1:nrow(d)) {
-    out[(d$Lon[i] - min(lon))/rlon + 1, (d$Lat[i] - min(lat))/rlat + 1] =
-        eval(parse(text=paste('d$', cname, '[i]', sep="")))
+  if (any(colnames(d)=="Year")) {
+    time <- TRUE
   }
-  rv <- eval(parse(text=paste("list(Lon=lon, Lat=lat, ", cname, "=out)", sep="")))
+
+  if (time) {
+    rv <- acast(d, Lon ~ Lat ~ Year, value.var=cname)
+  } else {
+    rv <- acast(d, Lon ~ Lat ~ Year, value.var=cname)
+  }
   return(rv)
 }
 
