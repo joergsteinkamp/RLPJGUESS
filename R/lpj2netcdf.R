@@ -46,16 +46,36 @@ lpj2nc.var.save <- function(ncout, data, dims, attr) {
   attr[names(attr)!= "name"]
   var.def.nc(ncout, name, "NC_FLOAT", dims)
   for (n in names(attr)) {
-    att.put.nc(ncout, name, n, "NC_FLOAT", attr[[n]])
+    if (is.integer(attr[[n]]))
+      att.put.nc(ncout, name, n, "NC_INT", attr[[n]])
+    else if (is.numeric(attr[[n]]))
+      att.put.nc(ncout, name, n, "NC_FLOAT", attr[[n]])
+    else
+      att.put.nc(ncout, name, n, "NC_CHAR", attr[[n]])
   }
-  var.put.nc(ncout, name, data)
+  
+  if (is.array(data)) {
+    var.put.nc(ncout, name, data)
+  } else if (is.data.frame(data)) {
+    lon <- extract.seq(data$Lon)
+    lat <- extract.seq(data$Lat)
+    if (any(colnames(data)=="Year"))
+      time <- extract.seq(data$Year)
+
+    if (exists("time")) {
+      out <- array(NA, c(ncol(data)-3, length(lon), length(lat), length(time)))
+      for (i in 4:ncol(data))
+        out[i-3,,,] = lpj.df2array(data, colnames(data)[i])
+    } else {
+      out <- array(NA, c(ncol(data)-3, length(lon), length(lat)))
+      for (i in 3:ncol(data))
+        out[i-3,,] = lpj.df2array(data, colnames(data)[i])
+    }
+    var.put.nc(ncout, name, out)
+  }
 }
 
-lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0) {
-  if (!require("RNetCDF", quietly=TRUE)) {
-    message("RNetCDF library not installed. Exiting function.")
-    return(FALSE)
-  }
+lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0, flat=FALSE) {
 
   ## make sure attr is a list and the netcdf variable name is not empty
   if (!is.list(attr)) {
@@ -73,17 +93,17 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
       attr[['name']]="values"
     }
   }
-  
+
   if (colnames(df)[1] != "Lon" && colnames(df)[1] != "Lat" && colnames(df)[1] != "Year") {
     message('Error: First 3 columns must be named "Lon", "Lat", "Year".')
     return(FALSE)
   }
 
-  ## Hard coded lat/lon distance!
-  lon        <- seq(min(df$Lon), max(df$Lon), 0.5)
-  lat        <- seq(max(df$Lat), min(df$Lat), -0.5)
-  time       <- 1:length(unique(df$Year))
-  start.year <- min(df$Year)
+  lon        <- extract.seq(df$Lon)
+  lat        <- extract.seq(df$Lat)
+  time       <- extract.seq(df$Year)
+  start.year <- min(time)
+  time = time - start.year
 
   if (is.na(time.start))
     time.start <- c(start_year, 1, 1)
