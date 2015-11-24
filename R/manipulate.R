@@ -20,6 +20,3 @@ lpj.df2array <- function(d, cname) {
   }
   return(rv)
 }
-
-
-  
