@@ -1,18 +1,25 @@
 lpj.df2array <- function(d, cname) {
   lon <- extract.seq(d$Lon)
   lat <- extract.seq(d$Lat)
-  rlon <- lon[2] - lon[1]
-  rlat <- lat[2] - lat[1]
   time <- FALSE
 
   if (any(colnames(d)=="Year")) {
+    year <- extract.seq(d$Year)
     time <- TRUE
   }
 
+  full.grid <- data.frame(Lon=rep(lon, length(lat)), Lat=rep(lat, each=length(lon)))
+  
   if (time) {
+    full.grid <- data.frame(full.grid, Year=rep(year, each=nrow(full.grid)))
+    d <- merge(d, full.grid, by=c("Lon", "Lat", "Year"), all=TRUE)
     rv <- acast(d, Lon ~ Lat ~ Year, value.var=cname)
   } else {
-    rv <- acast(d, Lon ~ Lat ~ Year, value.var=cname)
+    d <- merge(d, full.grid, by=c("Lon", "Lat"), all=TRUE)
+    rv <- acast(d, Lon ~ Lat, value.var=cname)
   }
   return(rv)
 }
+
+
+  
