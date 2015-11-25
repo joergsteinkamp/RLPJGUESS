@@ -1,13 +1,14 @@
 Package: RLPJGUESS
-Version: 0.3.3
+Version: 0.3.4
 Title: Process and display data from the DGVM LPJ-GUESS
 Date: 2015-11-24
 Author: Joerg Steinkamp
 Maintainer: Joerg Steinkamp <joergsteinkamp@yahoo.de>
-Depends: R (>= 2.15.0), methods, ggplot2, grid, RColorBrewer, plyr, reshape2, RNetCDF
+Depends: R (>= 2.15.0), methods, ggplot2, grid, RColorBrewer, plyr,
+        reshape2, RNetCDF
 Suggests: zoo, mgcv
-Description: Process ascii output data produced by the 
-  dynamic global vegetation model (DGVM) LPJ-GUESS for use in R.
+Description: Process ascii output data produced by the dynamic global
+        vegetation model (DGVM) LPJ-GUESS for use in R.
 License: GPL (>= 2)
 URL: http://joergsteinkamp.wordpress.com
 NeedsCompilation: no

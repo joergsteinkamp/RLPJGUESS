@@ -105,7 +105,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
   start.year <- min(time)
   time = time - start.year
 
-  if (is.na(time.start))
+  if (any(is.na(time.start)))
     time.start <- c(start_year, 1, 1)
   
   monthly <- FALSE
