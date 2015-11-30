@@ -123,7 +123,7 @@ biome_classification <- function(lai) {
   biomes.legend <- merge(biomes.legend, avail.biomes, by="name")
   biomes.legend$name = as.character(biomes.legend$name)
   biomes.legend$colour = as.character(biomes.legend$colour)
-  biomes.legend <<- biomes.legend
+  biomes.legend <- biomes.legend
 
-  return(biomes)
+  return(list(biomes=biomes, biomes.legend=biomes.legend))
 }
