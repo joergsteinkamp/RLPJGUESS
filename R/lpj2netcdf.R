@@ -106,7 +106,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
   time = time - start.year
 
   if (any(is.na(time.start)))
-    time.start <- c(start_year, 1, 1)
+    time.start <- c(start.year, 1, 1)
   
   monthly <- FALSE
   if (any(colnames(df)=="Jan"))
@@ -138,7 +138,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
     ##       so far only new variables with equal dimension definitions
     ##       are acepted.
     if (overwrite)
-      lpj2nc.dim.save(ncout, "time", 1:(length(time)*12),  time.start=time.start, time.offset=time.offset, time.unit=c(years=FALSE, months=TRUE, days=FALSE))
+      lpj2nc.dim.save(ncout, "time", 1:(length(time)*12)-1,  time.start=time.start, time.offset=time.offset, time.unit=c(years=FALSE, months=TRUE, days=FALSE))
 
     data.out <- array(NA, c(length(lon), length(lat), length(time)*12))
 
