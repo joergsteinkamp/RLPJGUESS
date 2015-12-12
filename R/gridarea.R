@@ -62,13 +62,21 @@ gridarea2d <- function(lon, lat, scale=1.0, ellipse=FALSE) {
   return(area)
 }
   
-extract.seq <- function(x, force.regular=FALSE) {
+extract.seq <- function(x, force.regular=FALSE, descending=FALSE) {
   x <- sort(unique(x))
   d <- x[2:length(x)] - x[1:(length(x)-1)]
   if (length(unique(d)) > length(x)/2 && !force.regular) {
     warning("Irregular steps return just sorted values!")
-    return(x)
+    if (descending) {
+      return(x[length(x):1])
+    } else {
+      return(x)
+    }
   }
-  x <- seq(min(x), max(x), min(d))
+  if (descending) {
+    x <- seq(max(x), min(x), -min(d))
+  } else {
+    x <- seq(min(x), max(x), min(d))
+  }
   return(x)
 }
