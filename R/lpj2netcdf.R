@@ -100,7 +100,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
   }
 
   lon        <- extract.seq(df$Lon)
-  lat        <- extract.seq(df$Lat)
+  lat        <- extract.seq(df$Lat, descending=TRUE)
   time       <- extract.seq(df$Year)
   start.year <- min(time)
   time = time - start.year
