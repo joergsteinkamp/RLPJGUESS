@@ -155,7 +155,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
   } else {
     ## TODO: see above
     if (overwrite) 
-      lpj2nc.dim.save(ncout, "time", time-1, time.start=time.start, time.offset=time.offset, time.unit=c(years=TRUE, months=FALSE, days=FALSE))
+      lpj2nc.dim.save(ncout, "time", time, time.start=time.start, time.offset=time.offset, time.unit=c(years=TRUE, months=FALSE, days=FALSE))
 
     data.out <- array(NA, c(length(colnames(df))-3, length(lon), length(lat), length(time)))
 
