@@ -41,7 +41,7 @@ lpj2nc.dim.save <- function(ncout, name, data, time.start=c(1901, 1, 1), time.of
   }
 }
 
-lpj2nc.var.save <- function(ncout, data, dims, attr) {
+lpj2nc.var.save <- function(ncout, data, dims, attr, invertlat=FALSE) {
   name <- attr[["name"]]
   attr[names(attr)!= "name"]
   var.def.nc(ncout, name, "NC_FLOAT", dims)
@@ -58,24 +58,24 @@ lpj2nc.var.save <- function(ncout, data, dims, attr) {
     var.put.nc(ncout, name, data)
   } else if (is.data.frame(data)) {
     lon <- extract.seq(data$Lon)
-    lat <- extract.seq(data$Lat)
+    lat <- extract.seq(data$Lat, descending=TRUE)
     if (any(colnames(data)=="Year"))
       time <- extract.seq(data$Year)
 
     if (exists("time")) {
       out <- array(NA, c(ncol(data)-3, length(lon), length(lat), length(time)))
       for (i in 4:ncol(data))
-        out[i-3,,,] = lpj.df2array(data, colnames(data)[i])
+        out[i-3,,,] = lpj.df2array(data, colnames(data)[i], invertlat=invertlat)
     } else {
       out <- array(NA, c(ncol(data)-3, length(lon), length(lat)))
       for (i in 3:ncol(data))
-        out[i-3,,] = lpj.df2array(data, colnames(data)[i])
+        out[i-3,,] = lpj.df2array(data, colnames(data)[i], invertlat=invertlat)
     }
     var.put.nc(ncout, name, out)
   }
 }
 
-lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0, flat=FALSE) {
+lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0, flat=FALSE, inverlat=FALSE) {
 
   ## make sure attr is a list and the netcdf variable name is not empty
   if (!is.list(attr)) {
@@ -150,7 +150,7 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
     if (as.flux)
       data.out <- aperm(aperm(data.out, c(3, 1, 2)) / dpm, c(2, 3, 1))
 
-    lpj2nc.var.save(ncout, scale * data.out, c("lon", "lat", "time"), attr) 
+    lpj2nc.var.save(ncout, scale * data.out, c("lon", "lat", "time"), attr, invertlat) 
 
   } else {
     ## TODO: see above
@@ -172,10 +172,10 @@ lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
     for (i in 4:length(colnames(df))) {
       if (basename!="values") {
         attr[["name"]] = paste(basename, colnames(df)[i], sep="_")
-        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr)
+        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr, invertlat)
       } else {
         attr[["name"]] = colnames(df)[i]
-        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr)
+        lpj2nc.var.save(ncout, scale * data.out[i-3,,,], c("lon", "lat", "time"), attr, invertlat)
       }
     }
   }
