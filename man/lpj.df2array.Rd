@@ -8,11 +8,13 @@
   "Lat" and the variable as array.
 }
 \usage{
-lpj.df2array(d, cname)
+lpj.df2array(d, cname, invertlat=FALSE)
 }
 \arguments{
   \item{d}{dataset with columns c("Lon", "Lat") and the variable to display.}
   \item{cname}{name of the variable in the dataset to be extracted.}
+  \item{invertlat}{if TRUE, returned array will be sorted with
+    descending latitudes}
 }
 \value{
   list with the elements "Lon", "Lat" and <cname>

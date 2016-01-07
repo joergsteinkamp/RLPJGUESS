@@ -6,11 +6,12 @@
   Extract a regular sequence from unique sorted values in an vector.
 }
 \usage{
-extract.seq(x, force.regular)
+extract.seq(x, force.regular=FALSE, descending=FALSE)
 }
 \arguments{
   \item{x}{vector}
   \item{force.regular}{force regular sequence of smallest distance.}
+  \item{descending}{in descending order.}
 }
 \value{
   vector with sorted unique sequence from min(x) to max(x) with

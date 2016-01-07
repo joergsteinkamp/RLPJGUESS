@@ -75,7 +75,7 @@ lpj2nc.var.save <- function(ncout, data, dims, attr, invertlat=FALSE) {
   }
 }
 
-lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0, flat=FALSE, invertlat=FALSE) {
+lpj2nc <- function(df, file="test.nc", attr=list(name="values"), overwrite=TRUE, as.flux=FALSE, scale=1.0, time.start=NA, time.offset=0, invertlat=FALSE) {
 
   ## make sure attr is a list and the netcdf variable name is not empty
   if (!is.list(attr)) {

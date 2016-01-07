@@ -6,10 +6,11 @@
   Checks whether a given year is a leap year
 }
 \usage{
-is.leapyear(year)
+is.leapyear(year, always=FALSE)
 }
 \arguments{
   \item{year}{year to check}
+  \item{always}{if TRUE, also relevant years before 1582 will be treated as leap years.}
 }
 \value{
   boolean

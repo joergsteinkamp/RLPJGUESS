@@ -17,6 +17,7 @@
 # American Geographers, 60:3, 593-597,
 # DOI: 10.1111/j.1467-8306.1970.tb00743.x
 
+## class for vectors
 setClass("rf_seasonality_v",
          representation(angle="numeric",
                         vx="numeric", vy="numeric",
@@ -24,6 +25,7 @@ setClass("rf_seasonality_v",
          prototype=list(angle=numeric(),
              vx=numeric(), vy=numeric(),
              seasonality=numeric()))
+## class for arrays
 setClass("rf_seasonality_a",
          representation(angle="numeric",
                         vx="array", vy="array",

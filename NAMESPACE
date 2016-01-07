@@ -1,2 +1,2 @@
 exportPattern("^[^\\.]")
-import(methods, ggplot2, grid, plyr, RColorBrewer)
+import(methods, ggplot2, plyr, RColorBrewer, reshape2, RNetCDF)

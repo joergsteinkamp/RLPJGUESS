@@ -8,13 +8,14 @@
   dependencies.
 }
 \usage{
-lpj2nc(df, file, attr, overwrite, as.flux, scale)
+lpj2nc(df, file="test.nc", attr=list(name="values"), overwrite=TRUE,
+as.flux=FALSE, scale=1, time.start=NA, time.offset=0,
+invertlat=FALSE)
 }
 \arguments{
   \item{df}{the data.frame object to save}
   \item{file}{file name, default "test.nc"}
-  \item{attr}{an attribute list
-    (e.g. "list(name='prec', long_name='precipitation', standard_name='precipitation_amount', units='mm day^-1')")}
+  \item{attr}{an attribute list. See details below.}
   \item{overwrite}{if an existing file should be overwritten or
     appended}
   \item{as.flux}{if set to true, data is divided by the number of days
@@ -22,9 +23,22 @@ lpj2nc(df, file, attr, overwrite, as.flux, scale)
     FALSE}
   \item{scale}{additional multiplication factor for the data, e.g. or
     unit conversion.}
+  \item{time.start}{used for time axis unit attribute. If specified, it
+    must be a vector of three elements: c(year, month, day). Otherwise
+    the lowest value of the "Year" column is used.}
+  \item{time.offset}{Value added to all elements in the time axis.}
+  \item{invertlat}{if TRUE latitudes will be saved in descending order.}
 }
 \value{
   boolean
+}
+\details{
+  attr: an attribute list associated with the variable. "name" is
+    mandatory (e.g. "list(name='prec',
+          long_name='precipitation',
+          standard_name='precipitation_amount',
+          '_FillValue'='1.e33'
+          units='mm day^-1')")
 }
 \author{
   Joerg Steinkamp <joergsteinkamp@yahoo.de>
