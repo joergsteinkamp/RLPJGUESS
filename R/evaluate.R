@@ -164,8 +164,8 @@ lpj.eval_biome.area <- function(d, area.scale=1, includeRefMap=TRUE, col=TRUE, s
     biome <- rbind(d, hickler)
   } else {
     biome <- d
-    rm(d)
   }
+  rm(d)
 
   return(lpj.eval_group_sum(biome, col=col, shape=shape, jitter=jitter, title=title))
 
@@ -205,34 +205,32 @@ lpj.eval_biome.map <- function(d, includeRefMap=TRUE, map.cols=3, legend.cols=3)
     rm(d)
   }
 
-  avail.biomes <- data.frame(name=levels(as.factor(biome$name)))
-  avail.biomes$name = as.character(avail.biomes$name)
+  avail.biomes <- data.frame(name=unique(biome$name),  stringsAsFactors=FALSE)
+
   biomes.legend <- data.frame(name=c("arctic/alpine tundra",
-                                  "desert",
-                                  "arid shrubland/steppe",
-                                  "xeric woodland/shrubland",
-                                  "dry grassland",
-                                  "tall grassland",
-                                  "dry savannah",
-                                  "moist savannah",
-                                  "tropical deciduous forest",
-                                  "tropical rain forest",
-                                  "tropical seasonal forest",
-                                  "temperate conifer forest",
-                                  "temperate mixed forest",
-                                  "temperate broadleaved evergreen forest",
-                                  "temperate deciduous forest",
-                                  "temperate/boreal mixed forest",
-                                  "boreal evergreen forest/woodland",
-                                  "boreal deciduous forest/woodland"),
+                                     "desert",
+                                     "arid shrubland/steppe",
+                                     "xeric woodland/shrubland",
+                                     "dry grassland",
+                                     "tall grassland",
+                                     "dry savannah",
+                                     "moist savannah",
+                                     "tropical deciduous forest",
+                                     "tropical rain forest",
+                                     "tropical seasonal forest",
+                                     "temperate conifer forest",
+                                     "temperate mixed forest",
+                                     "temperate broadleaved evergreen forest",
+                                     "temperate deciduous forest",
+                                     "temperate/boreal mixed forest",
+                                     "boreal evergreen forest/woodland",
+                                     "boreal deciduous forest/woodland"),
                               colour=c("#CECBE6", "#FAF7B3", "#F0F7E4", "#EE4D9A",
-                                  "#FCE06B", "#FAC60F", "#D5B229", "#CCDB29",
-                                  "#CA862A", "#108742", "#4DB848", "#CCE8CC", "#8AB53F",
-                                  "#127ABF", "#8DC63F", "#77C799", "#169D97",
-                                  "#97D8E5"))
-  biomes.legend$name = as.character(biomes.legend$name)
-  biomes.legend$colour = as.character(biomes.legend$colour)
-  biomes.legend <- merge(biomes.legend, avail.biomes, all=TRUE, by="name")
+                                       "#FCE06B", "#FAC60F", "#D5B229", "#CCDB29",
+                                       "#CA862A", "#108742", "#4DB848", "#CCE8CC", "#8AB53F",
+                                       "#127ABF", "#8DC63F", "#77C799", "#169D97",
+                                       "#97D8E5"), stringsAsFactors=FALSE)
+  biomes.legend <- merge(biomes.legend, avail.biomes, by="name")
 
   p <- lpj.map(biome, variable="name", cols=biomes.legend)
   p <- p + facet_wrap(~sens, ncol=map.cols)
