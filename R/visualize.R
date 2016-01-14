@@ -84,8 +84,8 @@ lpj.map <- function(d, variable=NA, cols=NA, title=NA, sym.col=FALSE, wrap.varia
     }
   }
   p <- p + geom_path(data=worldmap, size=0.1, colour = "black", aes(x=long, y=lat, group=group))
-  p <- p + scale_x_continuous(breaks=lon, labels=lon.lab)
-  p <- p + scale_y_continuous(breaks=lat, labels=lat.lab) 
+  p <- p + scale_x_continuous(breaks=lon, labels=lon.lab, expand=c(0,0))
+  p <- p + scale_y_continuous(breaks=lat, labels=lat.lab, expand=c(0,0)) 
   p <- p + coord_fixed(xlim=lon.limit, ylim=lat.limit)
   p <- p + xlab("Longitude")
   p <- p + ylab("Latitude")
