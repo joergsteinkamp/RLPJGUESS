@@ -7,7 +7,7 @@ lpj.daylength <- function(lat, doy, leap=FALSE) {
   deg2rad <- pi / 180.0
   hh      <- array(0., c(length(lat), length(doy)))
 
-  d <- -23.4 * deg2rad * cos(2.0* pi * (doy + 10.5) / sum(dom))
+  d <- -23.4 * deg2rad * cos(2.0 * pi * (doy + 10.5) / sum(dom))
   u <- sin(lat * deg2rad) %*% t(sin(d))
   v <- cos(lat * deg2rad) %*% t(cos(d))
 
@@ -16,34 +16,36 @@ lpj.daylength <- function(lat, doy, leap=FALSE) {
   hh[u>=v]       = pi
 
   ## daylength in hours
-  return(24.0 * t(hh) / pi);
+  return(24.0 * t(hh) / pi)
 }
 
 ## incoming net solar radiation (W m^-2) reduced by albedo,
 ## cloud coverage or sun shine fraction, latitude and
 ## day of the year as done in function daylengthinsoleet
 ## (driver.cpp) LPJ-GUESS v2.1
-lpj.radiation <- function(lat, doy, frac, albedo=0.17, percent=FALSE, sun=FALSE, leap=FALSE) {
+lpj.radiation <- function(lat, doy, rad.frac, albedo=0.17, cloudcover=FALSE, leap=FALSE) {
   dom <- c(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   if (leap) dom[3] = 29
-  if (!precent)
-    frac <- frac*100
-  
-  if (sun) {
-    sun <- frac
+
+  ## convert fraction to percent
+  if (max(rad.frac) <= 1)
+    rad.frac <- rad.frac*100
+
+  ## Convert to percent sunshine hours if given as cloudcover
+  if (cloudcover) {
+    sun <- 100. - rad.frac
   } else {
-    sun <- 100. - frac
+    sun <- rad.frac
   }
-  
+
   ## print(c(min(sun), max(sun)))
-  
-  QOO     <- 1360.0
-  A       <- 107.0
-  B       <- 0.2
-  C       <- 0.25
-  D       <- 0.5
-  K       <- 13750.98708
-  FRADPAR <- 0.5
+
+  QOO <- 1360.0
+  A   <- 107.0
+  B   <- 0.2
+  C   <- 0.25
+  D   <- 0.5
+  K   <- 13750.98708
 
   deg2rad <- pi / 180.0
   hh      <- array(0., c(length(lat), length(doy)))
@@ -59,7 +61,7 @@ lpj.radiation <- function(lat, doy, frac, albedo=0.17, percent=FALSE, sun=FALSE,
   u  <- t(u)
   v  <- t(v)
   hh <- t(hh)
-  
+
   qo <- QOO*(1.0 + 2.0 * 0.01675 * cos(2.0 * pi * (doy + 0.5) / sum(dom)))
 
   w <- (C + D * sun / 100.0) * (1.0 - albedo) * qo
