@@ -1,5 +1,9 @@
 LPJ-GUESS is a dynamic global vegetation model (DGVM) available on request at: http://www.nateko.lu.se/lpj-guess
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+**2016-05-11: THIS PACKAGE WILL NOT BE MAINTAINED ANY MORE BY ME.**
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 This R package simplifies the usage and visualisation of LPJ-GUESS ascii output for use in R (at least for me). You can read the LPJ-GUESS *.out files and creates data.frames of them, p.e.
 
 * timeseries (either ts or zoo)
